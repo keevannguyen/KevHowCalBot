@@ -35,6 +35,10 @@ module.exports = function(controller) {
 
     webserver.use(express.static('public'));
 
+    webserver.get('/hello_world', function(req, res) {
+      res.send('This is working!');
+    });
+  
     var server = http.createServer(webserver);
 
     server.listen(process.env.PORT || 3000, null, function() {
