@@ -1,3 +1,4 @@
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
@@ -5,6 +6,9 @@ var querystring = require('querystring');
 var debug = require('debug')('botkit:webserver');
 var http = require('http');
 var hbs = require('express-hbs');
+
+const { google } = require('googleapis');
+const fs = require('fs');
 
 module.exports = function(controller) {
 
@@ -36,7 +40,23 @@ module.exports = function(controller) {
     webserver.use(express.static('public'));
 
     webserver.get('/hello_world', function(req, res) {
+      console.log('state/user', req.query.state);
+      
+      controller.storage.users.get(req.query.state, (err, user) => {
+          console.log(user);
+          user.oAuth2Client.getToken(req.query.code, (err, token) => {
+              if (err) return console.error('Error retrieving access token', err);
+              user.token = token;
+              user.oAuth2Client.setCredentials(token);
+          });
+      });
+      
       res.send('This is working!');
+    });
+  
+    // Google Domain Authentication
+    webserver.get('/google08c1ff764232bff6.html', function(req, res) {
+      res.render('google08c1ff764232bff6.hbs');
     });
   
     var server = http.createServer(webserver);
